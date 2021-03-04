@@ -9,14 +9,15 @@ def main(domain, apikey):
     url = 'https://www.virustotal.com/vtapi/v2/domain/report'
     params = {'apikey':apikey,'domain':domain}
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=(2, 10))
         jdata = response.json()
         domains = sorted(jdata['subdomains'])
     except(KeyError):
         print("No domains found for %s" % domain)
         exit(0)
-    except(requests.ConnectionError):
+    except(requests.ConnectionError) as e:
         print("Could not connect to www.virtustotal.com", file=sys.stderr)
+        print(str(e), file=sys.stderr)
         exit(1)
 
     for domain in domains:
